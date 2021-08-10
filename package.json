@@ -1,0 +1,33 @@
+{
+  "name": "SDC-Reviews",
+  "version": "1.0.0",
+  "description": "## 1.1 Table of Contents",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon -r dotenv/config app.js",
+    "db:create": "sequelize-cli db:create"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Project-Catbird/SDC-Reviews.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Project-Catbird/SDC-Reviews/issues"
+  },
+  "homepage": "https://github.com/Project-Catbird/SDC-Reviews#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "pg": "^8.7.1",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.6.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12",
+    "sequelize-cli": "^6.2.0"
+  }
+}
