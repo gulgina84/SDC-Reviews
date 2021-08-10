@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const result = require('dotenv').config();
 const Sequelize = require('sequelize');
+const port = process.env.PORT || 3000;
 
 
 app.get('/', (req, res) => {
@@ -13,7 +14,7 @@ if (result.error) {
 }
 
 const sequelize = new Sequelize('postgres', `${process.env.DB_USERNAME}`, `${process.env.DB_PASSWORD}`, {
-  host: 'process.env.DB_HOST',
+  host: process.env.DB_HOST,
   dialect: 'postgres'
 });
 
@@ -26,6 +27,6 @@ const connect = async () => {
   }
 }
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server is listening at ${process.env.DB_HOST}:${process.env.PORT}`)
+app.listen(port, () => {
+  console.log(`Server is listening at ${process.env.DB_HOST}:${port}`)
 })
