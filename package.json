@@ -4,9 +4,11 @@
   "description": "## 1.1 Table of Contents",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon -r dotenv/config ./server/app.js",
-    "db:create": "sequelize-cli db:create"
+    "start": "nodemon ./server/index.js",
+    "db:create": "npx sequelize-cli db:create",
+    "db:create:models": "npx sequelize-cli model:generate --force --name reviews --attributes id:integer,product_id:integer,rating:integer,date:integer,summary:string,body:string,recommend:boolean,reported:boolean,reviewer_name:string,reviewer_email:string,response:string,helpfulness:integer",
+    "migrate": "npx sequelize-cli db:migrate",
+    "down": "npx sequelize-cli db:migrate:undo"
   },
   "repository": {
     "type": "git",
@@ -20,6 +22,7 @@
   },
   "homepage": "https://github.com/Project-Catbird/SDC-Reviews#readme",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "pg": "^8.7.1",
