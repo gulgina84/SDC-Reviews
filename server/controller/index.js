@@ -59,14 +59,12 @@ const getMeta = (req, res) => {
     WHERE product_id=${product_id} AND reported=false
     GROUP BY rating, recommend`)
 
-
     const characteristics = db.query(
       `SELECT AVG(value)::numeric(10,4)AS value,name FROM characteristics Full JOIN characteristic_reviews
           ON characteristic_reviews.characteristic_id=characteristics.id
           WHERE product_id=${product_id}
           GROUP BY name`
     )
-
   const reviews = await Promise.all([ratings,characteristics]);
   return reviews;
 
@@ -109,25 +107,64 @@ const getMeta = (req, res) => {
 
 
 // POST /reviews
-
   const addReview = (req, res) => {
+    const date = new Date().getTime().toString();
+    const product_id= req.body.product_id || 1;
+    const rating = req.body.rating;
+    const body = req.body.body;
+    const recommend = req.body.recommend;
+    const name = req.body.name;
+    const email = req.body.email;
+    const photos = req.body.photos || [];
+    const characteristics = req.body.characteristics || {};
 
+
+    const toReviews = db.query(
+      `INSERT INTO reviews (product_id,rating,summary,body,recommend,reviewer_name,reviewer_email) VALUES(1,5,'abc','efg',true,'gUnit','abc@gmail.com') RETURNING id;`
+    )
+    .then((result) => {
+      console.log(result[0][0].id);
+      const review_id = result[0][0].id;
+
+      if(photos.length > 0){
+        photos.forEach(url => {
+          const toPhotos = db.query(
+            `INSERT INTO reviews_photos (review_id,url) VALUES(${review_id}, url)`
+          )
+        })
+
+      }
+    })
   }
 
 
 
 //PUT /reviews/:review_id/helpful
-
 const markReviewHelpful = (req, res) => {
-
+  db.query(
+    `UPDATE reviews
+     SET helpfulness = helpfulness + 1
+     WHERE id=${req.params.review_id};
+    `
+  ).then(result => {
+    res.send('CREATED');
+    res.status(201);
+  })
 }
 
 
 
 //PUT /reviews/:review_id/report
-
 const reportReview = (req, res) => {
+  db.query(
+    `UPDATE reviews
+     SET reported = true
+     WHERE id=${req.params.review_id};
+    `
+  ).then(result => {
 
+    res.sendStatus(201);
+  })
 }
 
 module.exports = {
