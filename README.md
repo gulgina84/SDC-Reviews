@@ -11,4 +11,3 @@ navigate to SDC-Review folder and run `npm install`
 run `npm start`
 
 # 5. create database
-run `npm run db:create` to create database, will log "Database postgres_database_development created." in the console.
