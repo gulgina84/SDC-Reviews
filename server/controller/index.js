@@ -1,9 +1,9 @@
 const db = require('../../db/index.js');
 
-//GET /reviews/
+//////////////////////////GET /reviews/////////////////////////
 
 const getReviews = (req, res) => {
-   const product_id= req.query.product_id || 4;
+   const product_id= req.query.product_id || 1;
    const page = req.query.page || 1;
    const count = req.query.count || 5;
    const sort = req.query.sort ? `ORDER BY ${req.query.sort}DESC` : `ORDER BY date DESC`;
@@ -13,7 +13,7 @@ const getReviews = (req, res) => {
 
   const getData = async () => {
     const result = db.query(
-      `SELECT reviews.id AS review_id,rating,summary,recommend,response,body,to_timestamp(date/1000)::date AS date,reviewer_name,helpfulness,reported,COUNT(url),json_build_object('url', array_agg(url)) AS photos
+      `SELECT reviews.id AS review_id,rating,summary,recommend,response,body,to_char(to_timestamp(date/1000),'MM/DD/YYYY HH24:MI:SS') AS date,reviewer_name,helpfulness,reported,COUNT(url),json_build_object('url', array_agg(url)) AS photos
       FROM reviews
         LEFT JOIN reviews_photos ON reviews.id=reviews_photos.review_id
       WHERE product_id=${product_id} AND reported=false
@@ -27,9 +27,7 @@ const getReviews = (req, res) => {
 
   getData()
   .then(result => {
-
     result[0][0].forEach(eachReview => {
-
       const urls = eachReview.photos.url;
       eachReview.photos = [];
      urls.forEach((eachPhoto,index) => {
@@ -43,14 +41,12 @@ const getReviews = (req, res) => {
     res.send(sendBack);
   })
   .catch(err => console.log(err))
-
 };
 
 
-//GET /reviews/meta
-
+////////////////////////GET /reviews/meta///////////////////////////
 const getMeta = (req, res) => {
-  const product_id= req.query.product_id || 4;
+  const product_id= req.query.product_id || 6;
 
  const getMetaData = async () => {
    const ratings = db.query(
@@ -60,10 +56,10 @@ const getMeta = (req, res) => {
     GROUP BY rating, recommend`)
 
     const characteristics = db.query(
-      `SELECT AVG(value)::numeric(10,4)AS value,name FROM characteristics Full JOIN characteristic_reviews
+      `SELECT AVG(value)::numeric(10,4)AS value,name,characteristics.id FROM characteristics Full JOIN characteristic_reviews
           ON characteristic_reviews.characteristic_id=characteristics.id
           WHERE product_id=${product_id}
-          GROUP BY name`
+          GROUP BY name,characteristics.id`
     )
   const reviews = await Promise.all([ratings,characteristics]);
   return reviews;
@@ -87,10 +83,10 @@ const getMeta = (req, res) => {
    sendBack.ratings = ratings;
 
    let characteristics = {};
-   result[1][0].forEach((eachCharacteristic, index) => {
+   result[1][0].forEach((eachCharacteristic) => {
       let char = {
         [eachCharacteristic.name]: {
-          id: index,
+          id: eachCharacteristic.id,
           value: eachCharacteristic.value
         }
       }
@@ -106,11 +102,12 @@ const getMeta = (req, res) => {
 
 
 
-// POST /reviews
+////////////////////////// POST /reviews////////////////////////
   const addReview = (req, res) => {
     const date = new Date().getTime().toString();
     const product_id= req.body.product_id || 1;
     const rating = req.body.rating;
+    const summary = req.body.summary;
     const body = req.body.body;
     const recommend = req.body.recommend;
     const name = req.body.name;
@@ -118,28 +115,42 @@ const getMeta = (req, res) => {
     const photos = req.body.photos || [];
     const characteristics = req.body.characteristics || {};
 
-
     const toReviews = db.query(
-      `INSERT INTO reviews (product_id,rating,summary,body,recommend,reviewer_name,reviewer_email) VALUES(1,5,'abc','efg',true,'gUnit','abc@gmail.com') RETURNING id;`
+      `INSERT INTO reviews (product_id,rating,date,summary,body,recommend,reported,reviewer_name,reviewer_email,helpfulness) VALUES(${product_id},${rating},${date},'${summary}','${body}',${recommend},false,'${name}','${email}',0) RETURNING id;`
     )
-    .then((result) => {
-      console.log(result[0][0].id);
-      const review_id = result[0][0].id;
+    .then(async (result) => {
+      try {
+        const review_id = result[0][0].id;
+          if(photos.length !== 0){
+            for (const url of photos) {
+              await db.query(
+               `INSERT INTO reviews_photos (review_id,url) VALUES(${review_id},'${url}')`
+              )
+            }
 
-      if(photos.length > 0){
-        photos.forEach(url => {
-          const toPhotos = db.query(
-            `INSERT INTO reviews_photos (review_id,url) VALUES(${review_id}, url)`
-          )
-        })
+          }
 
+          if(characteristics !== {}){
+            for (const keys in characteristics) {
+               await db.query(
+                 `INSERT INTO characteristic_reviews (characteristic_id,review_id,value) VALUES(${keys},${review_id},${characteristics[keys]})`
+               )
+            }
+          }
+          return 'CREATED!';
       }
+
+        catch(err){ console.log(err) }
     })
+    .then(response => {
+      res.send(response);
+    })
+    .catch(err => console.log(err));
   }
 
 
 
-//PUT /reviews/:review_id/helpful
+//////////////////////////PUT /reviews/:review_id/helpful////////////////////////
 const markReviewHelpful = (req, res) => {
   db.query(
     `UPDATE reviews
@@ -154,7 +165,7 @@ const markReviewHelpful = (req, res) => {
 
 
 
-//PUT /reviews/:review_id/report
+//////////////////////////PUT /reviews/:review_id/report////////////////////////
 const reportReview = (req, res) => {
   db.query(
     `UPDATE reviews
