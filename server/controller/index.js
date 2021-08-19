@@ -3,13 +3,13 @@ const db = require('../../db/index.js');
 //////////////////////////GET /reviews/////////////////////////
 
 const getReviews = (req, res) => {
+
    const product_id= req.query.product_id || 1;
    const page = req.query.page || 1;
    const count = req.query.count || 5;
    const sort = req.query.sort ? `ORDER BY ${req.query.sort}DESC` : `ORDER BY date DESC`;
    const startIndex = (page - 1) * count;
    const endIndex = page * count;
-
 
   const getData = async () => {
     const result = db.query(
@@ -27,7 +27,8 @@ const getReviews = (req, res) => {
 
   getData()
   .then(result => {
-    result[0][0].forEach(eachReview => {
+    res.send(result[0].rows);
+    result[0].rows.forEach(eachReview => {
       const urls = eachReview.photos.url;
       eachReview.photos = [];
      urls.forEach((eachPhoto,index) => {
@@ -37,7 +38,7 @@ const getReviews = (req, res) => {
     })
     })
 
-    const sendBack = { product: product_id, page: page, count:count, result: result[0][0].slice(startIndex, endIndex)}
+    const sendBack = { product: product_id, page: page, count:count, result: result[0].rows.slice(startIndex, endIndex)}
     res.send(sendBack);
   })
   .catch(err => console.log(err))
@@ -46,7 +47,7 @@ const getReviews = (req, res) => {
 
 ////////////////////////GET /reviews/meta///////////////////////////
 const getMeta = (req, res) => {
-  const product_id= req.query.product_id || 6;
+  const product_id= req.query.product_id || 1;
 
  const getMetaData = async () => {
    const ratings = db.query(
@@ -71,7 +72,7 @@ const getMeta = (req, res) => {
    let ratings = {};
    let recommended = { 0: 0, 1: 0};
    let sendBack = {product_id: product_id.toString(), ratings: {}, recommended: recommended}
-     result[0][0].forEach(eachRating => {
+     result[0].rows.forEach(eachRating => {
      ratings = {...ratings,...eachRating.ratings};
      if (eachRating.recommend.true) {
        sendBack.recommended[1]++;
@@ -83,7 +84,7 @@ const getMeta = (req, res) => {
    sendBack.ratings = ratings;
 
    let characteristics = {};
-   result[1][0].forEach((eachCharacteristic) => {
+   result[1].rows.forEach((eachCharacteristic) => {
       let char = {
         [eachCharacteristic.name]: {
           id: eachCharacteristic.id,
@@ -114,13 +115,18 @@ const getMeta = (req, res) => {
     const email = req.body.email;
     const photos = req.body.photos || [];
     const characteristics = req.body.characteristics || {};
+    const response = null;
+    if(req.body.response) {
+      const response = req.body.response;
+    }
 
     const toReviews = db.query(
-      `INSERT INTO reviews (product_id,rating,date,summary,body,recommend,reported,reviewer_name,reviewer_email,helpfulness) VALUES(${product_id},${rating},${date},'${summary}','${body}',${recommend},false,'${name}','${email}',0) RETURNING id;`
+      `INSERT INTO reviews (product_id,rating,date,summary,body,recommend,reported,reviewer_name,reviewer_email,response,helpfulness) VALUES(${product_id},${rating},${date},'${summary}','${body}',${recommend},false,'${name}','${email}',${response},0) RETURNING id;`
     )
     .then(async (result) => {
       try {
-        const review_id = result[0][0].id;
+
+        const review_id = result.rows[0].id;
           if(photos.length !== 0){
             for (const url of photos) {
               await db.query(

@@ -1,19 +1,25 @@
+const { Client } = require('pg');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
-const Sequelize = require('sequelize');
-const db = new Sequelize('postgres_database_development', process.env.DB_USERNAME, process.env.DB_PASSWORD, {
-  host: 'localhost',
-  dialect: 'postgres'
+
+
+
+const db = new Client({
+  user: process.env.DB_USERNAME,
+  database: "postgres_database_development",
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  dialect: 'postgres',
+  port: process.env.PORT
 });
 
-const connect = async () => {
-  try {
-    await db.authenticate();
-    console.log('Connection has been established');
-  } catch (err) {
-    console.error('Unable to connct');
-  }
-}
-connect();
+
+db.connect()
+.then(() => {
+  console.log('database connected!')
+})
+.catch((err) => {
+  console.log(err);
+})
 
 module.exports = db;

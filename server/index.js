@@ -4,7 +4,7 @@ const router = require('./Routers/index.js');
 require('dotenv').config();
 var cors = require('cors');
 const bodyParser = require('body-parser');
-const port = process.env.PORT;
+const port = 3000;
 app.use(cors());
 
 
