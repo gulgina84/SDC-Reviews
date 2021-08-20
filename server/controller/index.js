@@ -1,10 +1,17 @@
 const db = require('../../db/index.js');
 
+
+///////////////////////////Say Hi///////////////////////////////
+const sayHi = (req, res) => {
+  res.send('Hello! Welcome');
+  res.status(200);
+}
+
 //////////////////////////GET /reviews/////////////////////////
 
 const getReviews = (req, res) => {
 
-   const product_id= req.query.product_id || 1;
+   const product_id= req.query.product_id || 12345;
    const page = req.query.page || 1;
    const count = req.query.count || 5;
    const sort = req.query.sort ? `ORDER BY ${req.query.sort}DESC` : `ORDER BY date DESC`;
@@ -27,7 +34,7 @@ const getReviews = (req, res) => {
 
   getData()
   .then(result => {
-    res.send(result[0].rows);
+
     result[0].rows.forEach(eachReview => {
       const urls = eachReview.photos.url;
       eachReview.photos = [];
@@ -39,6 +46,7 @@ const getReviews = (req, res) => {
     })
 
     const sendBack = { product: product_id, page: page, count:count, result: result[0].rows.slice(startIndex, endIndex)}
+    res.status(200);
     res.send(sendBack);
   })
   .catch(err => console.log(err))
@@ -47,7 +55,7 @@ const getReviews = (req, res) => {
 
 ////////////////////////GET /reviews/meta///////////////////////////
 const getMeta = (req, res) => {
-  const product_id= req.query.product_id || 1;
+  const product_id= req.query.product_id || 12345;
 
  const getMetaData = async () => {
    const ratings = db.query(
@@ -95,6 +103,7 @@ const getMeta = (req, res) => {
    })
 
    sendBack.characteristics = characteristics;
+   res.status(200);
    res.send(sendBack);
  })
  .catch(err => console.log(err))
@@ -149,6 +158,7 @@ const getMeta = (req, res) => {
         catch(err){ console.log(err) }
     })
     .then(response => {
+      res.status(200);
       res.send(response);
     })
     .catch(err => console.log(err));
@@ -164,8 +174,8 @@ const markReviewHelpful = (req, res) => {
      WHERE id=${req.params.review_id};
     `
   ).then(result => {
+    res.status(200);
     res.send('CREATED');
-    res.status(201);
   })
 }
 
@@ -185,6 +195,7 @@ const reportReview = (req, res) => {
 }
 
 module.exports = {
+  sayHi,
   getReviews,
   getMeta,
   addReview,

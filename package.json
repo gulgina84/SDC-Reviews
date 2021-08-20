@@ -1,5 +1,5 @@
 {
-  "name": "SDC-Reviews",
+  "name": "sdc_reviews",
   "version": "1.0.0",
   "description": "## 1.1 Table of Contents",
   "main": "index.js",
@@ -26,6 +26,7 @@
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "newrelic": "^8.1.0",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.6.5"

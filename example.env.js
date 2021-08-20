@@ -1,0 +1,7 @@
+PORT="REPLACE THE PORT"
+DB_HOST='REPLACE THE HOST'
+DB_USERNAME="REPLACE WITH YOUR DATABASE NAME"
+DB_PASSWORD=YOUR DATABASE PASSWORD
+
+
+//change above values and change this the fike name to '.env'
