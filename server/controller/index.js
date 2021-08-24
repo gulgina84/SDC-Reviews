@@ -1,12 +1,6 @@
 const db = require('../../db/index.js');
 
 
-///////////////////////////Say Hi///////////////////////////////
-const sayHi = (req, res) => {
-  res.send('Hello! Welcome');
-  res.status(200);
-}
-
 //////////////////////////GET /reviews/////////////////////////
 
 const getReviews = (req, res) => {
@@ -195,7 +189,6 @@ const reportReview = (req, res) => {
 }
 
 module.exports = {
-  sayHi,
   getReviews,
   getMeta,
   addReview,
