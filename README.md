@@ -154,7 +154,7 @@ review_id|integer|Required ID of the review to update
 
 Response
 
-**Status: 204 NO CONTENT
+**Status: 204 NO CONTENT**
 
 ---
 
