@@ -1,4 +1,5 @@
 const express = require('express');
+require('newrelic');
 const app = express();
 const router = require('./Routers/index.js');
 require('dotenv').config();
