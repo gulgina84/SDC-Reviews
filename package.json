@@ -1,0 +1,37 @@
+{
+  "name": "SDC-Reviews",
+  "version": "1.0.0",
+  "description": "## 1.1 Table of Contents",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon ./server/index.js",
+    "db:create": "npx sequelize-cli db:create",
+    "db:create:models": "npx sequelize-cli model:generate --force --name reviews --attributes id:integer,product_id:integer,rating:integer,date:integer,summary:string,body:string,recommend:boolean,reported:boolean,reviewer_name:string,reviewer_email:string,response:string,helpfulness:integer",
+    "migrate": "npx sequelize-cli db:migrate",
+    "down": "npx sequelize-cli db:migrate:undo"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Project-Catbird/SDC-Reviews.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Project-Catbird/SDC-Reviews/issues"
+  },
+  "homepage": "https://github.com/Project-Catbird/SDC-Reviews#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "pg": "^8.7.1",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.6.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12",
+    "sequelize-cli": "^6.2.0"
+  }
+}
