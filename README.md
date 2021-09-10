@@ -76,7 +76,7 @@ GET /qa/questions/:question_id/answers
 > Returns review metadata for a given product.
 
 Query Parameters
-Parameters
+
 Parameter | Type | Description
 -|-|-
 product_id|integer|Required ID of the product for which data should be returned
