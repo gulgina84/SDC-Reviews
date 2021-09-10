@@ -12,6 +12,7 @@ This is the server and database for a single service which supports the retail w
 GET /reviews/
 
 Parameters
+
 Parameter | Type | Description
 -|-|-
 page|integer|Selects the page of results to return. Default 1.
