@@ -146,6 +146,7 @@ PUT /reviews/:review_id/helpful
 Parameters
 
 Query Parameters
+
 Parameter | Type | Description
 -|-|-
 review_id|integer|Required ID of the review to update
